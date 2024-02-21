@@ -11,11 +11,7 @@ connectDB();
 
 // routes import
 
-// import userRoute from './routes/userRoute.js';
-
-
-
-
+import userRoute from './routes/userRoute.js';
 
 
 // Middlewares
@@ -47,12 +43,9 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET
 })
 
-
-
 // APIs
 
-// server.use("/api/user", userRoute);
-
+server.use("/api/user", userRoute);
 
 
 server.get('/', (req, res) => {
