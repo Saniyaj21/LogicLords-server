@@ -5,6 +5,8 @@ import bodyParser from 'body-parser';
 import fileUpload from 'express-fileupload';
 import { v2 as cloudinary } from 'cloudinary';
 import { connectDB } from './database/connection.js';
+import cookieParser from 'cookie-parser';
+
 
 const server = express();
 connectDB();
@@ -17,6 +19,7 @@ import userRoute from './routes/userRoute.js';
 // Middlewares
 // Increase the request size limit for JSON data
 server.use(bodyParser.json({ limit: '50mb' }));
+server.use(cookieParser());
 
 // Increase the request size limit for URL-encoded data
 server.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));

@@ -6,6 +6,19 @@ import { sendEmail } from '../utils/sendEmail.js';
 import { sendResponse } from '../utils/sendResponse.js';
 import bcrypt from 'bcryptjs';
 
+
+
+
+
+export const userInfo = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id)
+        sendResponse({ res, code: 200, success: true, user });
+    } catch (error) {
+        sendResponse({ res, code: 400, success: false, message: 'User not available' });
+    }
+}
+
 export const registerUser = async (req, res, next) => {
     try {
         const { name, email, password } = req.body;

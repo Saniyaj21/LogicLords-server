@@ -4,6 +4,7 @@ import { sendResponse } from '../utils/sendResponse.js';
 export const isAuthenticate = async (req, res, next) => {
 
     try {
+       
         const { token } = req.cookies;
         if (!token) {
             sendResponse({ res, code: 400, success: false, message: "You are not authenticated" });
