@@ -46,6 +46,10 @@ const userSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
+    isGoogleLogin: {
+        type: Boolean,
+        default: false
+    },
 
     gender: {
         type: String,
