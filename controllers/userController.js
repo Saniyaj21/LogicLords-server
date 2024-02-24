@@ -122,17 +122,14 @@ export const LoginUser = async (req, res) => {
 
 export const googleSignup = async (req, res) => {
     try {
-
         const { email, name, avatar } = req.body
-        console.log(email, name, avatar);
+        let user = await User.findOne({ email: email });
 
-        // if user exists just login him
-        const user = await User.findOne({ email: email });
         if (user) {
+            console.log("User exists");
             sendCookie(user, res, 200);
         } else {
-            // Creating new user
-            const user = await User.create({
+            let user = await User.create({
                 name,
                 email,
                 googleAvatar: avatar,
