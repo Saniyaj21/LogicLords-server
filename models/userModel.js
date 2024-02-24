@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema({
     },
     verifyEmailOTP: {
         type: String,
+        select: false,
     },
     verifyEmailOTPExpire: {
         type: Date,
@@ -39,8 +40,7 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
-        default: "",
+        select: false,
     },
     llCoins: {
         type: Number,
@@ -49,6 +49,9 @@ const userSchema = new mongoose.Schema({
     isGoogleLogin: {
         type: Boolean,
         default: false
+    },
+    googleAvatar: {
+        type: String
     },
 
     gender: {
@@ -92,6 +95,20 @@ const userSchema = new mongoose.Schema({
 });
 
 
+// Compare Password
+
+userSchema.methods.comparePassword = async function (password) {
+    try {
+
+        return await bcrypt.compare(password, this.password);
+    } catch (error) {
+        console.error('Error comparing passwords:', error);
+        return false;
+    }
+};
+
+
+
 userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) {
         next();
@@ -105,10 +122,6 @@ userSchema.pre("save", async function (next) {
 userSchema.methods.getMailVerifyOTP = function () {
     // Generating OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-    // Set OTP and its expiration time
-    this.verifyEmailOTP = otp;
-    this.verifyEmailOTPExpire = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
     return otp;
 };
