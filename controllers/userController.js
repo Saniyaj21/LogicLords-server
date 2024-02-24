@@ -120,28 +120,56 @@ export const LoginUser = async (req, res) => {
     }
 }
 
-export const googleSignup = async (req, res) => {
+// export const googleSignup = async (req, res) => {
+//     try {
+//         const { email, name, avatar } = req.body
+//         let user = await User.findOne({ email: email });
+
+//         if (user) {
+//             console.log("User exists");
+//             sendCookie(user, res, 200);
+//         } else {
+//             let user = await User.create({
+//                 name,
+//                 email,
+//                 googleAvatar: avatar,
+//                 isEmailVerified: true,
+//                 isGoogleLogin: true
+//             });
+//             console.log("userCreated", user);
+
+//             sendCookie(user, res, 200);
+//         }
+//     } catch (error) {
+//         sendResponse({ res, code: 400, success: false, error: error.message });
+//     }
+// }
+
+
+export const logOutUser = async (req, res) => {
     try {
-        const { email, name, avatar } = req.body
-        let user = await User.findOne({ email: email });
-
-        if (user) {
-            console.log("User exists");
-            sendCookie(user, res, 200);
-        } else {
-            let user = await User.create({
-                name,
-                email,
-                googleAvatar: avatar,
-                isEmailVerified: true,
-                isGoogleLogin: true
-            });
-            console.log("userCreated", user);
-
-            sendCookie(user, res, 200);
-        }
+      res
+        .status(200)
+        .cookie("token", null, {
+          expiresIn: new Date(
+            Date.now()
+          ),
+          httpOnly: true,
+          sameSite: "None",
+          secure: true
+        }).json({
+          success: true,
+          message: "user Logout successfully.."
+        })
+  
     } catch (error) {
-        sendResponse({ res, code: 400, success: false, error: error.message });
+  
+      res.status(400).json({
+        success: false,
+        message: "logout faild...",
+        error
+      })
+  
     }
-}
-
+  }
+  
