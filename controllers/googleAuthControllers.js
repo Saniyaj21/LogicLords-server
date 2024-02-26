@@ -6,13 +6,11 @@ import { sendResponse } from '../utils/sendResponse.js';
 
 export const googleSignup = async (req, res) => {
     try {
-        console.log("try");
         const { email, name, avatar } = req.body
-        console.log(email, name, avatar);
         let user = await User.findOne({ email: email });
 
         if (user) {
-            console.log("User exists");
+            // console.log("User exists");
             sendCookie(user, res, 200);
         } else {
             let user = await User.create({
@@ -22,7 +20,7 @@ export const googleSignup = async (req, res) => {
                 isEmailVerified: true,
                 isGoogleLogin: true
             });
-            console.log("userCreated", user);
+            // console.log("userCreated", user);
 
             sendCookie(user, res, 200);
         }

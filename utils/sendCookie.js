@@ -4,7 +4,6 @@ import 'dotenv'
 export const sendCookie = (user, res, statusCode = 200) => {
 
   const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET,);
-  console.log('token', token);
 
   res
 
@@ -18,7 +17,6 @@ export const sendCookie = (user, res, statusCode = 200) => {
     }).status(statusCode)
     .json({
       success: true,
-
       user,
       token
     })
