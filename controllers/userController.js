@@ -9,7 +9,8 @@ import bcrypt from 'bcryptjs';
 export const userInfo = async (req, res) => {
     try {
         const user = await User.findById(req.user._id)
-        sendResponse({ res, code: 200, success: true, user });
+        res.status(200).json({ success: true, user });
+        // sendResponse({ res, code: 200, success: true, user });
     } catch (error) {
         sendResponse({ res, code: 400, success: false, message: 'User not available' });
     }
