@@ -95,20 +95,6 @@ const userSchema = new mongoose.Schema({
 });
 
 
-// Compare Password
-
-userSchema.methods.comparePassword = async function (password) {
-    try {
-
-        return await bcrypt.compare(password, this.password);
-    } catch (error) {
-        console.error('Error comparing passwords:', error);
-        return false;
-    }
-};
-
-
-
 userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) {
         next();
@@ -119,32 +105,44 @@ userSchema.pre("save", async function (next) {
 
 
 
-userSchema.methods.getMailVerifyOTP = function () {
-    // Generating OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+// Compare Password
 
-    return otp;
+userSchema.methods.comparePassword = async function (password) {
+    return await bcrypt.compare(password, this.password); //entered password, hashed password
 };
+
+
+
+
+
+
+
+// userSchema.methods.getMailVerifyOTP = function () {
+//     // Generating OTP
+//     const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+//     return otp;
+// };
 
 // userSchema.methods.setPassword = async function (password) {
 //     this.password = await bcrypt.hash(this.password, 10);
 // };
-userSchema.methods.verifyEmailPasswordOTP = function (otp) {
-    // Check if the OTP is valid and has not expired
-    console.log("model", this.verifyEmailOTP);
-    console.log("model", this.verifyEmailOTPExpire);
-    console.log("verifyOTP", otp);
+// userSchema.methods.verifyEmailPasswordOTP = function (otp) {
+//     // Check if the OTP is valid and has not expired
+//     console.log("model", this.verifyEmailOTP);
+//     console.log("model", this.verifyEmailOTPExpire);
+//     console.log("verifyOTP", otp);
 
-    if (this.verifyEmailOTP == otp) {
-        console.log("Chanasi");
-    }
+//     if (this.verifyEmailOTP == otp) {
+//         console.log("Chanasi");
+//     }
 
-    return (
-        this.verifyEmailOTP == otp &&
-        this.verifyEmailOTPExpire &&
-        this.verifyEmailOTPExpire > Date.now()
-    );
-};
+//     return (
+//         this.verifyEmailOTP == otp &&
+//         this.verifyEmailOTPExpire &&
+//         this.verifyEmailOTPExpire > Date.now()
+//     );
+// };
 
 
 
