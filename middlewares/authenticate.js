@@ -7,7 +7,8 @@ export const isAuthenticate = async (req, res, next) => {
 
         const { token } = req.cookies;
         if (!token) {
-            return res.status(400).json({
+            // checking success to the frontend so that we dont have to see 400 error i console
+            return res.status(200).json({
                 success: false,
                 message: "You are not authenticated"
             })
@@ -19,7 +20,7 @@ export const isAuthenticate = async (req, res, next) => {
 
         next();
     } catch (error) {
-        res.status(400).json({
+        res.status(200).json({
             success: false,
             message: "You are not authenticated"
         })

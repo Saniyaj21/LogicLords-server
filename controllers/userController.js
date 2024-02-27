@@ -18,68 +18,59 @@ export const userInfo = async (req, res) => {
 
 export const registerUser = async (req, res, next) => {
     try {
-        const { name, email, password } = req.body;
-        const user = await User.findOne({ email: email });
-        if (user) {
-            sendResponse({ res, code: 400, success: false, error: 'User already exists' });
-        } else {
-            //password encription 
-            const encriptedPassword = await bcrypt.hash(password, 10)
-            // Creating new user
-            const user = await User.create({ name, email, password: encriptedPassword });
-            const resetOTP = user.getMailVerifyOTP();
-            const message = `Your Mail verification OTP is :- \n\n ${resetOTP} \n\nIf you have not requested this email then, please ignore it.`;
-            try {
-                await sendEmail({
-                    email: email,
-                    subject: `LogicLords: Emil verify OTP : ${resetOTP}`,
-                    message,
-                });
-                user.verifyEmailOTP = resetOTP;
-                user.verifyEmailOTPExpire = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
-                await user.save({ validateBeforeSave: false });
-                console.log(user);
 
-            } catch (error) {
-                user.verifyEmailOTP = undefined;
-                user.verifyEmailOTPExpire = undefined;
-                await user.save({ validateBeforeSave: false });
-                sendResponse({ res, code: 400, success: false, error: error.message });
-            }
-            sendCookie(user, res, 200);
-        }
-    } catch (error) {
-        sendResponse({ res, code: 400, success: false, error: error.message });
+        let { name, email, password } = req.body;
+        let user = await User.findOne({ email })
+        if (user) return res.status(400).json({ success: false, message: 'user alrady exist...' });//if user exist , then return error
+
+        //password encription 
+        const encriptedPassword = await bcrypt.hash(password, 10)
+
+        user = await User.create({
+            name,
+            email,
+            password: encriptedPassword,
+        })
+        console.log(user);
+        //return token using JWT
+        sendCookie(user, res, 200);
+    }
+    catch (err) {
+        res.status(400).json({
+            success: false,
+            message: 'Can not Register !',
+            err
+        })
     }
 }
 
 // verify email verifying otp
-export const veryfyEmailOTP = async (req, res) => {
-    try {
-        const { otp, email } = req.body;
-        let user = await User.findOne({ email: email }).select("+verifyEmailOTP");
+// export const veryfyEmailOTP = async (req, res) => {
+//     try {
+//         const { otp, email } = req.body;
+//         let user = await User.findOne({ email: email }).select("+verifyEmailOTP");
 
-        if (!user) {
-            sendResponse({ res, code: 400, success: false, message: "Reset Password OTP is invalid or has been expired" });
-        }
-        const isMatched = user.verifyEmailPasswordOTP(otp)
+//         if (!user) {
+//             sendResponse({ res, code: 400, success: false, message: "Reset Password OTP is invalid or has been expired" });
+//         }
+//         const isMatched = user.verifyEmailPasswordOTP(otp)
 
-        if (isMatched) {
-            user.isEmailVerified = true;
-            await user.save({ validateBeforeSave: false });
-            user = await User.findOne({
-                email
-            });
-            console.log(user);
-            sendResponse({ res, code: 200, success: true, user, message: "Reset Password OTP is invalid or has been expired" });
-        }
-        else {
-            sendResponse({ res, code: 400, success: false, message: "Reset Password OTP is invalid or has been expired" });
-        }
-    } catch (error) {
-        sendResponse({ res, code: 400, success: false, message: error.message });
-    }
-}
+//         if (isMatched) {
+//             user.isEmailVerified = true;
+//             await user.save({ validateBeforeSave: false });
+//             user = await User.findOne({
+//                 email
+//             });
+//             console.log(user);
+//             sendResponse({ res, code: 200, success: true, user, message: "Reset Password OTP is invalid or has been expired" });
+//         }
+//         else {
+//             sendResponse({ res, code: 400, success: false, message: "Reset Password OTP is invalid or has been expired" });
+//         }
+//     } catch (error) {
+//         sendResponse({ res, code: 400, success: false, message: error.message });
+//     }
+// }
 
 
 ///log in controller......
@@ -89,12 +80,12 @@ export const LoginUser = async (req, res) => {
 
         const { email, password } = req.body
         console.log(email, password);
-
         // checking if user has given password and email both
 
 
         const user = await User.findOne({ email }).select("+password");
         console.log(user);
+
         if (!user) {
             return res.status(400)
                 .json({
@@ -149,28 +140,28 @@ export const LoginUser = async (req, res) => {
 
 export const logOutUser = async (req, res) => {
     try {
-      res
-        .status(200)
-        .cookie("token", null, {
-          expiresIn: new Date(
-            Date.now()
-          ),
-          httpOnly: true,
-          sameSite: "None",
-          secure: true
-        }).json({
-          success: true,
-          message: "user Logout successfully.."
-        })
-  
+        res
+            .status(200)
+            .cookie("token", null, {
+                expiresIn: new Date(
+                    Date.now()
+                ),
+                httpOnly: true,
+                sameSite: "None",
+                secure: true
+            }).json({
+                success: true,
+                message: "user Logout successfully.."
+            })
+
     } catch (error) {
-  
-      res.status(400).json({
-        success: false,
-        message: "logout faild...",
-        error
-      })
-  
+
+        res.status(400).json({
+            success: false,
+            message: "logout faild...",
+            error
+        })
+
     }
-  }
-  
+}
+
