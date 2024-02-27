@@ -14,6 +14,11 @@ const userSchema = new mongoose.Schema({
         unique: true,
         validate: [validator.isEmail, "Please Enter a valid Email"],
     },
+    password: {
+        type: String,
+        select: false,
+    },
+
     isEmailVerified: {
         type: Boolean,
         default: false,
@@ -31,17 +36,12 @@ const userSchema = new mongoose.Schema({
     avatar: {
         public_id: {
             type: String,
-            // required: true,
         },
         url: {
             type: String,
-            // required: true,
         },
     },
-    password: {
-        type: String,
-        select: false,
-    },
+
     llCoins: {
         type: Number,
         default: 0,
@@ -100,7 +100,12 @@ userSchema.pre("save", async function (next) {
         next();
     }
 
-    this.password = await bcrypt.hash(this.password, 10);
+    try {
+        this.password = await bcrypt.hash(this.password, 10);
+
+    } catch (error) {
+        next(error)
+    }
 });
 
 
