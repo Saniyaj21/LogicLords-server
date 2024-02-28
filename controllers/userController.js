@@ -17,10 +17,13 @@ export const registerUser = async (req, res, next) => {
         let user = await User.findOne({ email })
         if (user) return res.status(400).json({ success: false, message: 'user alrady exist...' });//if user exist , then return error
 
+
+        // after email verification user will get 5 more coins
         user = await User.create({
             name,
             email,
-            password
+            password,
+            llCoins: 5
         })
         sendCookie(user, res, 200);
     }
