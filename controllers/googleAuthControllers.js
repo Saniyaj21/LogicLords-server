@@ -18,7 +18,8 @@ export const googleSignup = async (req, res) => {
                 email,
                 googleAvatar: avatar,
                 isEmailVerified: true,
-                isGoogleLogin: true
+                isGoogleLogin: true,
+                llCoins: 10
             });
             // console.log("userCreated", user);
 
