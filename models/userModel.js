@@ -92,6 +92,10 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+
+
+    resetPasswordOTP: String,
+    resetPasswordOTPExpire: Date,
 });
 
 
@@ -115,6 +119,29 @@ userSchema.pre("save", async function (next) {
 userSchema.methods.comparePassword = async function (password) {
     return await bcrypt.compare(password, this.password); //entered password, hashed password
 };
+
+// forget password methods
+
+userSchema.methods.getResetPasswordOTP = function () {
+    // Generating OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Set OTP and its expiration time
+    this.resetPasswordOTP = otp;
+    this.resetPasswordOTPExpire = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+    return otp;
+};
+
+userSchema.methods.verifyResetPasswordOTP = function (otp) {
+    // Check if the OTP is valid and has not expired
+    return (
+        this.resetPasswordOTP === otp &&
+        this.resetPasswordOTPExpire &&
+        this.resetPasswordOTPExpire > Date.now()
+    );
+};
+
 
 
 
