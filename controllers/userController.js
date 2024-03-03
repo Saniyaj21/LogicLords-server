@@ -71,3 +71,148 @@ export const logOutUser = async (req, res) => {
     }
 }
 
+// forgot password recive email from frontenda and send the otp
+export const forgotPassword = async (req, res, next) => {
+    try {
+      const user = await User.findOne({ email: req.body.email });
+      // console.log(user);
+  
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found",
+        });
+      }
+  
+      // otp method
+      const resetOTP = user.getResetPasswordOTP();
+  
+      await user.save({ validateBeforeSave: false });
+  
+      const message = `Your password reset OTP is :- \n\n ${resetOTP} \n\nIf you have not requested this email then, please ignore it.`;
+  
+      try {
+        await sendEmail({
+          email: user.email,
+          subject: `CloudGallery: forgot password OTP : ${resetOTP}`,
+          message,
+        });
+  
+        res.status(200).json({
+          success: true,
+          message: `Email sent to ${user.email} successfully`,
+        });
+      } catch (error) {
+        user.resetPasswordOTP = undefined;
+        user.resetPasswordOTPExpire = undefined;
+  
+        await user.save({ validateBeforeSave: false });
+  
+        return res.status(500).json({
+          success: false,
+          message: error.message,
+        });
+      }
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  };
+
+  
+// get and verify the otp from frontend
+
+export const veryfyOTP = async (req, res) => {
+
+    try {
+      const { resetPasswordOTP } = req.body;
+  
+      const user = await User.findOne({
+        resetPasswordOTP,
+      });
+      // console.log(user);
+      // console.log(user.verifyResetPasswordOTP(resetPasswordOTP));
+  
+      if (!user) {
+        return res.status(400).json({
+          success: false,
+          message: "Reset Password OTP is invalid or has been expired",
+        });
+      }
+      // console.log(user);
+      if (user.verifyResetPasswordOTP(resetPasswordOTP)) {
+        res.status(200).json({
+          success: true
+  
+        });
+      }
+      else {
+        res.status(400).json({
+          success: false,
+          message: error.message,
+        })
+      }
+  
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: error.message,
+      })
+    }
+  }
+  
+  
+
+// reset password
+
+export const setNewPassword = async (req, res) => {
+
+    try {
+  
+      const { resetPasswordOTP, password } = req.body;
+      // console.log(resetPasswordOTP);
+  
+      const user = await User.findOne({
+        resetPasswordOTP,
+  
+      });
+  
+      // console.log(user);
+      if (!user) {
+        return res.status(400).json({
+          success: false,
+          message: "Reset Password OTP is invalid or has been expired",
+        });
+      }
+  
+  
+      // console.log(900, user);
+  
+      if (user.verifyResetPasswordOTP(resetPasswordOTP)) {
+        user.password = password;
+  
+        // Clear the OTP and its expiration time
+        user.resetPasswordOTP = undefined;
+        user.resetPasswordOTPExpire = undefined;
+        await user.save();
+        sendCookie(user, res, 200);
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: "Cant't verify your otp",
+        });
+      }
+  
+    } catch (error) {
+      console.log(error);
+      res.status(400).json({
+        success: false,
+        message: "Cant't verify your otp",
+      });
+    }
+  
+  }
+  
+  
