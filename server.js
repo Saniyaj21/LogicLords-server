@@ -7,6 +7,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import { connectDB } from './database/connection.js';
 import cookieParser from 'cookie-parser';
 
+// import fuck
 
 const server = express();
 connectDB();
