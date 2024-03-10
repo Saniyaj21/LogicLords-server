@@ -59,7 +59,7 @@ export const logOutUser = async (req, res) => {
                     Date.now()
                 ),
                 httpOnly: true,
-                sameSite: "Lex",
+                sameSite: "None",
                 secure: true,
               
             }).json({
