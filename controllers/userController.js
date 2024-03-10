@@ -52,24 +52,21 @@ export const LoginUser = async (req, res) => {
 }
 
 export const logOutUser = async (req, res) => {
-    try {
-        res.status(200)
-            .cookie("token", null, {
-                expiresIn: new Date(
-                    Date.now()
-                ),
-                httpOnly: true,
-                sameSite: "None",
-                secure: true
-            }).json({
-                success: true,
-                message: "user Logout successfully"
-            })
-
-    } catch (error) {
-        res.status(400).json({ success: false, message: 'Logout Failed.' });
-    }
+  try {
+      // Clear the "token" cookie by setting it to an empty value and expiring it
+      res.clearCookie("token", {
+          httpOnly: true,
+          sameSite: "None",
+          secure: true
+      }).status(200).json({
+          success: true,
+          message: "User logged out successfully"
+      });
+  } catch (error) {
+      res.status(400).json({ success: false, message: 'Logout failed.' });
+  }
 }
+
 
 // forgot password recive email from frontenda and send the otp
 export const forgotPassword = async (req, res, next) => {
