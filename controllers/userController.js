@@ -59,8 +59,9 @@ export const logOutUser = async (req, res) => {
                     Date.now()
                 ),
                 httpOnly: true,
-                sameSite: "None",
-                secure: true
+                sameSite: "Lex",
+                secure: true,
+              
             }).json({
                 success: true,
                 message: "user Logout successfully"
