@@ -1,8 +1,7 @@
 // user controller
 import { User } from '../models/userModel.js';
-import { sendCookie } from '../utils/sendCookie.js';
 import { sendResponse } from '../utils/sendResponse.js';
-
+import jwt from 'jsonwebtoken'
 
 export const googleSignup = async (req, res) => {
     try {
@@ -11,7 +10,17 @@ export const googleSignup = async (req, res) => {
 
         if (user) {
             // console.log("User exists");
-            sendCookie(user, res, 200);
+            const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET,);
+
+            user.token = token;
+            user.save();
+
+
+            res.status(200).json({
+                success: true,
+                token,
+                user
+            });
         } else {
             let user = await User.create({
                 name,
@@ -23,7 +32,17 @@ export const googleSignup = async (req, res) => {
             });
             // console.log("userCreated", user);
 
-            sendCookie(user, res, 200);
+            const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET,);
+
+            user.token = token;
+            user.save();
+
+
+            res.status(200).json({
+                success: true,
+                token,
+                user
+            });
         }
     } catch (error) {
         sendResponse({ res, code: 400, success: false, error: error.message });
