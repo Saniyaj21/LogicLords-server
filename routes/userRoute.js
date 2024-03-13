@@ -10,7 +10,7 @@ router.post('/register', registerUser);
 // router.post('/emailverify', veryfyEmailOTP);
 router.post('/login', LoginUser)
 router.post('/signup/google', googleSignup)
-router.get('/logout', logOutUser)
+router.get('/logout',isAuthenticate, logOutUser)
 
 
 // forget password
