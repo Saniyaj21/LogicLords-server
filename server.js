@@ -15,6 +15,8 @@ connectDB();
 // routes import
 
 import userRoute from './routes/userRoute.js';
+import videoRoute from './routes/videoRoute.js';
+import courseRoute from './routes/courseRoute.js';
 
 
 // Middlewares
@@ -50,6 +52,8 @@ cloudinary.config({
 // APIs
 
 server.use("/api/user", userRoute);
+server.use("/api/video", videoRoute);
+server.use("/api/course", courseRoute);
 
 
 server.get('/', (req, res) => {
